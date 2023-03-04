@@ -6,10 +6,10 @@ dotenv.config();
 declare var globalThis: any;
 globalThis.mongoClient=new MongoClient(process.env.MONGO_URL as string);
 
-import { addUser, containsUser, getUser } from "../../main/DAO/UserDAO.js";
+import { addUser, containsUser, getUser, validateUser } from "../../main/DAO/UserDAO.js";
 
 
-
+validateUser('sais@gmail.com','1234').then(console.log,x=>console.log)
 
 //Fetch User
 //getUser('sai2@gmail.com').then(e=>console.log(e)).catch(e=>console.log(e))
