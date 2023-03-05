@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { addResume, getResume, myResumes } from "../DAO/ResumeDAO.js";
+import { addResume, getResume, myResumes, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
+import { generateOpenAIJson } from "../resume/OpenAI.js";
 import { generateBasicResume } from "../resume/ResumeGenerator.js";
 import { sampleData } from "../sampleData/SampleData.js";
 
@@ -79,4 +80,42 @@ export async function getResumeEndpoint(req:Request,res:Response)
     }
 
     res.json(result);
+}
+
+
+export async function addResumeOpenAIEndpoint(req:Request,res:Response)
+{
+
+    let result={success:false,data:{},message:""};
+    try
+    {
+        let resumename=req.body.resumename;
+        let userEmail=res.locals.user.email;
+        let resumeDescription=req.body.resumedescription;
+        if(userEmail == null)
+            throw new Error("Cant't Find User");
+        let id=await setResumePending(userEmail,resumename)        
+    
+        generateOpenAIJson(resumeDescription,3).then(
+            (data)=>generateBasicResume(data))
+            .then(
+                (resumeModel)=>setResumeSuccess(id,resumeModel)
+
+            ).catch(err=>setResumeFailure(id))
+
+
+
+        result.message="Succesfully Added Resume";
+        result.success=true;
+
+    }
+    catch(E)
+    {
+        console.log(E);
+        result.success=false;
+        result.message="Couldn't Add Resume";
+    }
+
+    res.json(result)
+    
 }

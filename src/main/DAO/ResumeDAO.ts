@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { ResumeModel } from "../models/models.js";
 declare const globalThis: any;
-
+let mongoClient:MongoClient
 export async function addResume(email:string,name:string,resumeModel:ResumeModel):Promise<boolean>
 {   
     try{
@@ -66,4 +66,65 @@ export async function getResume(resumeId:string)
         throw new Error("Couldm't fetch resume");
     }
 
+}
+
+export async function setResumePending(userEmail:string,resumeName:string)
+{
+    try{
+        
+
+
+            
+        let col=globalThis.mongoClient.db('resume_builder').collection('resumes');
+        let data=await col.insertOne({time:Date.now(),resumename:resumeName,'email':userEmail,'state':"pending"});
+        return data.insertedId.toString();
+    
+    }
+
+    catch(E)
+    {   
+        console.log("Error while adding user in DAO",E);
+        throw new Error("Couldn't Add Resume");
+    }
+
+}
+
+export async function setResumeFailure(id:string) 
+{
+    try{
+        
+
+
+            
+        let col=globalThis.mongoClient.db('resume_builder').collection('resumes');
+        await col.findOneAndUpdate({_id:new ObjectId(id)},{$set:{'state':'failure'}})
+        
+    
+    }
+
+    catch(E)
+    {   
+        console.log("Error while Updating Resume",E);
+        throw new Error("Couldn't Updating Resume");
+    }
+}
+
+export async function setResumeSuccess(id:string,resumeModel:ResumeModel) 
+{
+    try{
+        
+
+
+            
+        let col=globalThis.mongoClient.db('resume_builder').collection('resumes');
+        await col.findOneAndUpdate({_id:new ObjectId(id)},{$set:{'state':'success','resumeModel':resumeModel}})
+
+    
+    }
+
+    catch(E)
+    {   
+        console.log("Error while Updating Resume",E);
+        throw new Error("Couldn't Updating Resume");
+    }
 }
