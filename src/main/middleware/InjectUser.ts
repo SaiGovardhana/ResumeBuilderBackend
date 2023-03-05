@@ -14,7 +14,7 @@ export async function InjectUser(req:Request,res:Response,next:Function)
             try{
                 let userCookie=req.cookies.user;
                 
-                if(JWT.verify(userCookie,process.env.JWT_SECRET as string))
+                if(JWT.verify(userCookie,process.env.JWT_SECRET_KEY as string))
                     {
                         let user=JWT.decode(userCookie)
                         res.locals.user=user;
