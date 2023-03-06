@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { addResume, getResume, myResumes, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
+import { addResume, getResume, myResumes, saveResume, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
 import { generateOpenAIJson } from "../resume/OpenAI.js";
 import { generateBasicResume } from "../resume/ResumeGenerator.js";
 import { sampleData } from "../sampleData/SampleData.js";
@@ -118,4 +118,24 @@ export async function addResumeOpenAIEndpoint(req:Request,res:Response)
 
     res.json(result)
     
+}
+
+export async function saveResumeEndpoint(req:Request,res:Response)
+{
+    let result={success:false,message:""};
+    try
+    {
+        if(req.body.resumeId == null  || req.body.resumeModel == null )
+            throw new Error("Invalid Request Format");
+        result.success=true
+        await saveResume(req.body.resumeId,req.body.resumeModel);
+    }
+    catch(E)
+    {
+        console.log(E);
+        result.success=false;
+        result.message="An Error Occured";
+    }
+    res.json(result);
+
 }

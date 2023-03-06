@@ -128,3 +128,22 @@ export async function setResumeSuccess(id:string,resumeModel:ResumeModel)
         throw new Error("Couldn't Updating Resume");
     }
 }
+
+export async function saveResume(resumeId:string,resumeModel:ResumeModel)
+{
+    try
+    {
+        let col=globalThis.mongoClient.db('resume_builder').collection('resumes');
+        let result =await col.findOneAndUpdate({_id:new ObjectId(resumeId)},{$set:{'resumeModel':resumeModel}});
+        if(result.value==null)
+            throw new Error("coulnt Find Resume");
+        
+
+    }
+    catch(E)
+    {
+        console.log(E);
+        throw new Error("Couldn't update resume");
+
+    }
+}
