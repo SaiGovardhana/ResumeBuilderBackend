@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import  jwt from "jsonwebtoken";
 
-import { addUser, containsUser, getUser, validateUser } from "../DAO/UserDAO.js";
+import { addSubscription, addUser, containsUser, getUser, validateUser } from "../DAO/UserDAO.js";
+import { UserModel } from "../models/models.js";
 let maxSeconds=30*24*60*60*1000
 
 
@@ -71,8 +72,8 @@ export async function loginUserEndpoint(req:Request,res:Response)
                     else
                     {   result.success=true;
                         result.message="Succesfully Logged In User";
-
-                        result.data={email:req.body.email,name:user.name};
+                        user.password=""
+                        result.data=user;
                         res.cookie('user',jwt.sign(result.data,process.env.JWT_SECRET_KEY as string),{maxAge:maxSeconds})
                     }
 
@@ -86,5 +87,62 @@ export async function loginUserEndpoint(req:Request,res:Response)
 
     }
 
+    res.json(result);
+}
+
+export async function addSubscriptionEndpoint(req:Request,res:Response)
+{
+    let result={success:false,message:""}
+    try
+    {
+        let user:UserModel|null = res.locals.user as UserModel;
+        if(user == null)
+            throw new Error("Couldn't Find user");
+        
+        let updatedUser=await getUser(user.email);
+
+        if(updatedUser == null)
+            throw new Error("Couldn't Find User");
+
+        await addSubscription(updatedUser.email,req.body.subLevel);
+        result.success=true;
+        result.message="Added Subscription"
+
+    }
+    catch(E)
+    {
+        console.log(E);
+        result.success=false;
+        result.message="Couldn't Subscribe";
+    }
+
+    res.json(result);
+}
+
+export async function getLoggedInUser(req:Request,res:Response)
+{
+    let result:{success:boolean,data?:UserModel,loggedIn?:boolean}={success:false};
+    try
+    {
+        if(res.locals.user ==null)
+            throw new Error("Couldn't Find User");
+        let user=await getUser((res.locals.user as UserModel).email);
+        if(user !=null)
+        {   user.password="";
+            result.success=true;
+            result.data=user;
+            result.loggedIn=true;
+        }
+        else
+        {   result.loggedIn=false;
+            result.success=true;
+        }
+
+    }
+    catch(E)
+    {
+        console.log(E)
+        result.success=false;
+    }
     res.json(result);
 }

@@ -8,5 +8,5 @@ resumeRouter.post('/createResume',addResumeEndpoint);
 resumeRouter.get('/myResumes',getMyResumesEndpoint);
 resumeRouter.get('/getResume/:resumeId',getResumeEndpoint);
 resumeRouter.post('/createResumeOpenAI',addResumeOpenAIEndpoint);
-resumeRouter.post('/updateResume',saveResumeEndpoint)
+resumeRouter.post('/updateResume',saveResumeEndpoint);
 export {resumeRouter}

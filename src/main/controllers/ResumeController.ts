@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { addResume, getResume, myResumes, saveResume, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
+import { getUser } from "../DAO/UserDAO.js";
 import { generateOpenAIJson } from "../resume/OpenAI.js";
 import { generateBasicResume } from "../resume/ResumeGenerator.js";
 import { sampleData } from "../sampleData/SampleData.js";
@@ -92,21 +93,35 @@ export async function addResumeOpenAIEndpoint(req:Request,res:Response)
         let resumename=req.body.resumename;
         let userEmail=res.locals.user.email;
         let resumeDescription=req.body.resumedescription;
-        if(userEmail == null)
+        
+            
+        let user=await getUser(userEmail);
+        
+        if(user == null)
             throw new Error("Cant't Find User");
-        let id=await setResumePending(userEmail,resumename)        
-    
-        generateOpenAIJson(resumeDescription,3).then(
-            (data)=>generateBasicResume(data))
-            .then(
-                (resumeModel)=>setResumeSuccess(id,resumeModel)
 
-            ).catch(err=>setResumeFailure(id))
+        if(  user.aiResumesLeft == 0 )
+        {
+            result.success=false;
+            result.message="No Resume Balance, Please Subscribe."
+        }
+        else
+        {
+         
+         let id=await setResumePending(userEmail,resumename)        
+         
+            generateOpenAIJson(resumeDescription,3).then(
+                (data)=>generateBasicResume(data))
+                .then(
+                    (resumeModel)=>setResumeSuccess(id,resumeModel)
 
+                ).catch(err=>setResumeFailure(id))
+        
 
 
         result.message="Succesfully Added Resume";
         result.success=true;
+        }
 
     }
     catch(E)

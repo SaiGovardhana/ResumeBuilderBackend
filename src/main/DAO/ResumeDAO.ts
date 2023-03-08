@@ -1,5 +1,6 @@
 import { MongoClient, ObjectId } from "mongodb";
 import { ResumeModel } from "../models/models.js";
+import { incrementResumes } from "./UserDAO.js";
 declare const globalThis: any;
 let mongoClient:MongoClient
 export async function addResume(email:string,name:string,resumeModel:ResumeModel):Promise<boolean>
@@ -74,7 +75,7 @@ export async function setResumePending(userEmail:string,resumeName:string)
         
 
 
-            
+        await incrementResumes(userEmail,-1);
         let col=globalThis.mongoClient.db('resume_builder').collection('resumes');
         let data=await col.insertOne({time:Date.now(),resumename:resumeName,'email':userEmail,'state':"pending"});
         return data.insertedId.toString();
