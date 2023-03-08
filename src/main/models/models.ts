@@ -11,6 +11,9 @@ export type ResumeOptionsModel=
     headerTextColor:string,
     showPhone:boolean,
     showEmail:boolean,
-    showLocation:boolean
+    showLocation:boolean,
+
+    sectionAlignment:string,
+    headerAlignment:string
 
 };

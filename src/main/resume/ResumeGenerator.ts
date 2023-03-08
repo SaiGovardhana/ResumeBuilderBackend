@@ -13,12 +13,12 @@ export async function generateBasicResume(data:{[key:string]:string|string[]|Bas
         {
             case 'name':
                 
-                    modified["headers"]["name"]={name:"name",headerContent:`<h1>${data[x]}</h1>`};
+                    modified["headers"]["name"]={name:"name",headerContent:`<h1 style="text-align:center">${data[x]}</h1>`};
                     break;
 
             case 'profession':
                 
-                    modified["headers"]["profession"]={name:"profession",headerContent:`<h3>${data[x]}</h3>`};
+                    modified["headers"]["profession"]={name:"profession",headerContent:`<h3 style="text-align:center">${data[x]}</h3>`};
                     break;
 
             case 'email':

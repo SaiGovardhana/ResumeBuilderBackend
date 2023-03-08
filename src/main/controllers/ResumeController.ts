@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { addResume, getResume, myResumes, saveResume, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
-import { getUser } from "../DAO/UserDAO.js";
+import { getUser, incrementResumes } from "../DAO/UserDAO.js";
 import { generateOpenAIJson } from "../resume/OpenAI.js";
 import { generateBasicResume } from "../resume/ResumeGenerator.js";
 import { sampleData } from "../sampleData/SampleData.js";
@@ -115,7 +115,11 @@ export async function addResumeOpenAIEndpoint(req:Request,res:Response)
                 .then(
                     (resumeModel)=>setResumeSuccess(id,resumeModel)
 
-                ).catch(err=>setResumeFailure(id))
+                ).catch(err=>
+                    {   incrementResumes(userEmail,1)
+                        setResumeFailure(id)
+                    }
+                    )
         
 
 
@@ -126,7 +130,7 @@ export async function addResumeOpenAIEndpoint(req:Request,res:Response)
     }
     catch(E)
     {
-        console.log(E);
+        console.log("Couldn't Find User.");
         result.success=false;
         result.message="Couldn't Add Resume";
     }

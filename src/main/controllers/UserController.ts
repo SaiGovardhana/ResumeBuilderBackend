@@ -141,7 +141,7 @@ export async function getLoggedInUser(req:Request,res:Response)
     }
     catch(E)
     {
-        console.log(E)
+        console.log("Couldn't Find User")
         result.success=false;
     }
     res.json(result);
