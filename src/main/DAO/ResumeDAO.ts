@@ -59,7 +59,7 @@ export async function getResume(resumeId:string)
         let resume=await col.findOne({_id:new ObjectId(resumeId)});
         if(resume == null)
             throw new Error("Couldn't Find resume")
-        return resume
+        return resume 
     }
     catch(E)
     {
