@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { addResume, getResume, myResumes, saveResume, setResumeFailure, setResumePending, setResumeSuccess } from "../DAO/ResumeDAO.js";
 import { getUser, incrementResumes } from "../DAO/UserDAO.js";
+import { sendPDFToEmail } from "../fetchPdf/FetchPDF.js";
 import { generateOpenAIJson } from "../resume/OpenAI.js";
 import { generateBasicResume } from "../resume/ResumeGenerator.js";
 import { sampleData } from "../sampleData/SampleData.js";
@@ -157,4 +158,32 @@ export async function saveResumeEndpoint(req:Request,res:Response)
     }
     res.json(result);
 
+}
+
+export async function sendResumeToEmailEndpoint(req:Request,res:Response) 
+{   let result={success:false,message:""}
+    try
+    {
+            let userEmail=req.body.email;
+            let resumeId=req.body.resumeId;
+            if(userEmail== null || resumeId == null)
+                {
+                        result.success=false;
+                        result.message="An Error Occurred! Missing Email Or ResumeId."
+                }
+            else
+            {
+                let resume=await getResume(resumeId);
+                await sendPDFToEmail(resumeId,userEmail);
+                result.success=true;
+                result.message="Email Sent! Check Your Inbox";
+            }
+    }
+    catch(E)
+    {
+        result.success=false;
+        result.message="An Error Occured";
+    }
+    
+    res.json(result);
 }
