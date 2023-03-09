@@ -4,6 +4,10 @@ import { sendMail } from '../mail/SendMail.js';
 import { getResume } from '../DAO/ResumeDAO.js';
 import { ResumeModel } from '../models/models.js';
 dotenv.config();
+
+//FIX FOR MOBILE HOTSPOT
+import { setDefaultResultOrder } from "dns";
+setDefaultResultOrder("ipv4first");
 export async function sendPDFToEmail(resumeId:string,userEmail:string) {
 
   try{

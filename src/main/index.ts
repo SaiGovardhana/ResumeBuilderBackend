@@ -16,7 +16,7 @@ if(!existsSync('generated'))
 let app:Express.Express=Express();
 app.use(cookieparser())
 
-app.use(Express.json())
+app.use(Express.json({limit:'10mb'}))
 app.use('/',InjectUser);
 app.use('/api/user',userRouter);
 app.use('/api/resume/',resumeRouter);
