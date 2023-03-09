@@ -14,9 +14,11 @@ globalThis.mongoClient=new MongoClient(process.env.MONGO_URL as string);
 if(!existsSync('generated'))
     mkdirSync('generated')
 let app:Express.Express=Express();
-app.use(cookieparser())
 
 app.use(Express.json({limit:'10mb'}))
+app.use(cookieparser())
+
+
 app.use('/',InjectUser);
 app.use('/api/user',userRouter);
 app.use('/api/resume/',resumeRouter);
